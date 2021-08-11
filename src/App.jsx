@@ -7,14 +7,34 @@ import counterSlice, {
   decrement,
   reset,
 } from './features/counterSlice';
+import { useEffect } from 'react';
+import { getPopularFilms } from './features/filmListSlice';
 
 function App() {
   const count = useSelector((store) => store.count.value);
   const toggle = useSelector((store) => store.toggle.boolean);
+  const popularFilmList = useSelector((store) => store.films.popularFilmList);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(getPopularFilms());
+  }, []);
   return (
     <div className="App">
+      <div>
+        <ul>
+          {popularFilmList &&
+            popularFilmList.map((popularFilm) => {
+              return (
+                <div key={popularFilm.id}>
+                  <div>
+                    <p>{popularFilm.original_title}</p>
+                  </div>
+                </div>
+              );
+            })}
+        </ul>
+      </div>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <div>
