@@ -1,12 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
-import toggleSlice, { toggler } from './features/toggleSlice';
-import counterSlice, {
-  increment,
-  decrement,
-  reset,
-} from './features/counterSlice';
+import { toggler } from './features/toggleSlice';
+import { increment, decrement, reset } from './features/counterSlice';
 import { useEffect } from 'react';
 import { getPopularFilms } from './features/filmListSlice';
 
@@ -18,9 +14,10 @@ function App() {
 
   useEffect(() => {
     dispatch(getPopularFilms());
-  }, []);
+  }, [dispatch]);
   return (
     <div className="App">
+      <button type="button">Load more</button>
       <div>
         <ul>
           {popularFilmList &&
