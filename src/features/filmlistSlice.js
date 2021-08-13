@@ -11,8 +11,8 @@ const initialState = {
 };
 export const getPopularFilms = createAsyncThunk(
   `${FILMS}/getPopularFilms`,
-  () => {
-    const response = axios.get(getPopularFilmsUrl(initialState.page));
+  (page) => {
+    const response = axios.get(getPopularFilmsUrl(page));
     return response;
   }
 );
@@ -20,7 +20,19 @@ export const getPopularFilms = createAsyncThunk(
 const filmListSlice = createSlice({
   name: FILMS,
   initialState,
-
+  reducers: {
+    nextPage(state) {
+      state.page++;
+      console.log(state.page, 'page inside [next page]');
+    },
+    previousPage(state) {
+      if (state.page > 0) {
+        state.page++;
+        return;
+      }
+      state.page = 0;
+    },
+  },
   extraReducers: {
     [getPopularFilms.pending]: (state, action) => {
       state.status = 'loading';
@@ -30,13 +42,12 @@ const filmListSlice = createSlice({
         data: { results },
       } = payload;
       state.status = 'success';
-
-      state.popularFilmList = results;
+      state.popularFilmList = [...state.popularFilmList, ...results];
     },
     [getPopularFilms.rejected]: (state, action) => {
       state.status = 'failed';
     },
   },
 });
-
+export const { previousPage, nextPage } = filmListSlice.actions;
 export default filmListSlice.reducer;

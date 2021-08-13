@@ -4,26 +4,55 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggler } from './features/toggleSlice';
 import { increment, decrement, reset } from './features/counterSlice';
 import { useEffect } from 'react';
-import { getPopularFilms } from './features/filmListSlice';
+import {
+  getPopularFilms,
+  previousPage,
+  nextPage,
+} from './features/filmListSlice';
 
 function App() {
   const count = useSelector((store) => store.count.value);
   const toggle = useSelector((store) => store.toggle.boolean);
   const popularFilmList = useSelector((store) => store.films.popularFilmList);
+  const requestStatus = useSelector((store) => store.films.status);
+  const page = useSelector((store) => store.films.page);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getPopularFilms());
+    dispatch(getPopularFilms(page));
   }, [dispatch]);
+  function makeRandom() {
+    return Math.floor(Math.random() * 100);
+  }
+  function loadNextPage() {
+    Promise.resolve()
+      .then(() => {
+        dispatch(nextPage());
+        return true;
+      })
+      .then(() => {
+        dispatch(getPopularFilms(page));
+        console.log(page, 'page after');
+      });
+  }
+
   return (
     <div className="App">
-      <button type="button">Load more</button>
+      <div>
+        <span className="text-green-500 text-4xl">{requestStatus}</span>
+      </div>
+      <button type="button" onClick={() => dispatch(getPopularFilms())}>
+        Previous page
+      </button>
+      <button type="button" onClick={loadNextPage}>
+        Next page
+      </button>
       <div>
         <ul>
           {popularFilmList &&
             popularFilmList.map((popularFilm) => {
               return (
-                <div key={popularFilm.id}>
+                <div key={popularFilm.id + makeRandom()}>
                   <div>
                     <p>{popularFilm.original_title}</p>
                   </div>
